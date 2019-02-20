@@ -1,150 +1,3 @@
-
-
-function Get-CBUserCounts {
-    
-    [cmdletbinding()]
-     Param (
-      
-    )
-
-
-$EntirePoolCount = Get-CsUser  # Lets
-$PoolCount = $EntirePoolCount | Group-Object RegistrarPool | Select Count,Name | Sort-Object Count -Descending
-$EVUsers = ($EntirePoolCount | where {$_.EnterpriseVoiceEnabled -eq $true}).count
-$ExUMUsers = ($EntirePoolCount | where {$_.ExUMEnabled -eq $true}).count
-
-$Return = @{
-'AllUsers' = $EntirePoolCount.Count;
-'PoolGroups' = $PoolCount;
-'EVusers' = $EVUsers;
-'ExUMusers' = $ExUMUsers;
-}
-Write-Output $Return
-
-}
-
-
-function Get-CBlyncBase64 {
-
-    <#
-      .SYNOPSIS
-      Gets the Base64 of an image url that is passed to it.
-
-      .DESCRIPTION
-      The function is designed to convert a image URL to a base64 code. If you pass a url, the software will visit that site. subject to there being an internet connection 
-      and download the image into it's parser, from there the code will convert the binary to a base 64 code
-
-      .EXAMPLE
-      Get-CBlyncBase64 -url http://www.google.com/logo.jpg
-
-      .NOTES
-      This function was really designed to assist the health HTML generation.
-
-      .LINK
-      https://www.linkedin.com/in/cburns/
-
-      .INPUTS
-      No Inputs needed
-
-      .OUTPUTS
-      
-    #>
-    [cmdletbinding()]
-     Param (
-       #Get the location of the image
-      [Parameter(Mandatory)]
-      [string]$Url
-    )
-
-    Process{
-      if ($url -like "Http*"){
-        $image = Invoke-WebRequest $url
-        [string]$downloadedImgCheck = $image.Headers.'content-type'
-          if ($downloadedImgCheck -like "image*") {
-            $Base64toReturn = [convert]::ToBase64String($image.content)
-          }
-      }else{
-          $image = Get-Content $Url -Encoding byte
-          $Base64toReturn = [convert]::ToBase64String($image)
-      }
-
-    }
-    END{
-      Return "data:image/png;base64,$Base64toReturn"
-    }
-
-    
-
-}
-
-Function Get-PoolDoughnut {
-$PoolCount = (Get-CBUserCounts).poolgroups
-
-
-# load the appropriate assemblies 
-[void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") 
-[void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
-
-
-
-$PoolUsageChart1 = New-object System.Windows.Forms.DataVisualization.Charting.Chart
-
-$PoolUsageChart1.Width = 800
-
-$PoolUsageChart1.Height = 400
-
-$PoolUsageChart1.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
-
-
-$chartarea = New-Object System.Windows.Forms.DataVisualization.Charting.ChartArea
-
-$chartarea.Name = "ChartArea1"
-$chartarea.BackColor =[System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
-
-$PoolUsageChart1.ChartAreas.Add($chartarea)
-  
-[void]$PoolUsageChart1.Series.Add("data1")
-
-$PoolUsageChart1.Series["data1"].ChartType = [System.Windows.Forms.DataVisualization.Charting.SeriesChartType]::Doughnut
-
-$PoolList = @(Foreach($pool in $PoolCount.Name){$pool})
-$PoolNumber = @(Foreach($number in $PoolCount){$number.Count})
-
-$PoolUsageChart1.Series["data1"].Points.DataBindXY($PoolList, $PoolNumber)
-#$PoolUsageChart1.Series['data1'].Palette = "SeaGreen"
-
-#There is going to be an anyoing bug here... If there are more than 8 entries then you will have another label with black text on a black circle... DAMN!
-
-$PoolUsageChart1.Series['data1'].Points[0].LabelForeColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee") 
-$PoolUsageChart1.Palette = [System.Windows.Forms.DataVisualization.Charting.ChartColorPalette]::None
-$PoolUsageChart1.PaletteCustomColors = @([System.Drawing.Color]::Black,[System.Drawing.ColorTranslator]::FromHtml("#666666"),[System.Drawing.ColorTranslator]::FromHtml("#ffed00"), [System.Drawing.ColorTranslator]::FromHtml("#64ff00"), [System.Drawing.ColorTranslator]::FromHtml("#00c9ff"), [System.Drawing.ColorTranslator]::FromHtml("#d9d9d9") )
-
-# set chart options 
-
-$PoolUsageChart1.Series["data1"]["PieLineColor"] = "Black" 
-$PoolUsageChart1.Series["data1"].Font = "Arial,18"
-
-$PoolUsageChart1.Series["data1"].CustomProperties = "DoughnutRadius=50, PieLabelStyle=inside,PieDrawingStyle=default,PieStartAngle=270"
-$PoolUsageChart1.Series["data1"].IsValueShownAsLabel = $true
-
-$Legend = New-Object System.Windows.Forms.DataVisualization.Charting.Legend
-$Legend.IsEquallySpacedItems = $True
-$Legend.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
-
-$PoolUsageChart1.Legends.Add($Legend)
-$PoolUsageChart1.Series[‘data1’].LegendText = "#VALX (#VALY)"
-
-$tempfile = New-TemporaryFile
-
-$PoolUsageChart1.SaveImage($tempfile,"png")
-
-
-
-Get-CBlyncBase64 $tempfile
-
-
-}
-
 function Get-CBLyncHealthNew {
 
   <#
@@ -1864,3 +1717,149 @@ write-verbose -message  ' Done!'
 
 }
 
+
+
+function Get-CBUserCounts {
+    
+    [cmdletbinding()]
+     Param (
+      
+    )
+
+
+$EntirePoolCount = Get-CsUser  # Lets
+$PoolCount = $EntirePoolCount | Group-Object RegistrarPool | Select Count,Name | Sort-Object Count -Descending
+$EVUsers = ($EntirePoolCount | where {$_.EnterpriseVoiceEnabled -eq $true}).count
+$ExUMUsers = ($EntirePoolCount | where {$_.ExUMEnabled -eq $true}).count
+
+$Return = @{
+'AllUsers' = $EntirePoolCount.Count;
+'PoolGroups' = $PoolCount;
+'EVusers' = $EVUsers;
+'ExUMusers' = $ExUMUsers;
+}
+Write-Output $Return
+
+}
+
+
+function Get-CBlyncBase64 {
+
+    <#
+      .SYNOPSIS
+      Gets the Base64 of an image url that is passed to it.
+
+      .DESCRIPTION
+      The function is designed to convert a image URL to a base64 code. If you pass a url, the software will visit that site. subject to there being an internet connection 
+      and download the image into it's parser, from there the code will convert the binary to a base 64 code
+
+      .EXAMPLE
+      Get-CBlyncBase64 -url http://www.google.com/logo.jpg
+
+      .NOTES
+      This function was really designed to assist the health HTML generation.
+
+      .LINK
+      https://www.linkedin.com/in/cburns/
+
+      .INPUTS
+      No Inputs needed
+
+      .OUTPUTS
+      
+    #>
+    [cmdletbinding()]
+     Param (
+       #Get the location of the image
+      [Parameter(Mandatory)]
+      [string]$Url
+    )
+
+    Process{
+      if ($url -like "Http*"){
+        $image = Invoke-WebRequest $url
+        [string]$downloadedImgCheck = $image.Headers.'content-type'
+          if ($downloadedImgCheck -like "image*") {
+            $Base64toReturn = [convert]::ToBase64String($image.content)
+          }
+      }else{
+          $image = Get-Content $Url -Encoding byte
+          $Base64toReturn = [convert]::ToBase64String($image)
+      }
+
+    }
+    END{
+      Return "data:image/png;base64,$Base64toReturn"
+    }
+
+    
+
+}
+
+Function Get-PoolDoughnut {
+    $PoolCount = (Get-CBUserCounts).poolgroups
+
+
+    # load the appropriate assemblies 
+    [void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") 
+    [void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
+
+
+
+    $PoolUsageChart1 = New-object System.Windows.Forms.DataVisualization.Charting.Chart
+
+    $PoolUsageChart1.Width = 800
+
+    $PoolUsageChart1.Height = 400
+
+    $PoolUsageChart1.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
+
+
+    $chartarea = New-Object System.Windows.Forms.DataVisualization.Charting.ChartArea
+
+    $chartarea.Name = "ChartArea1"
+    $chartarea.BackColor =[System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
+
+    $PoolUsageChart1.ChartAreas.Add($chartarea)
+    
+    [void]$PoolUsageChart1.Series.Add("data1")
+
+    $PoolUsageChart1.Series["data1"].ChartType = [System.Windows.Forms.DataVisualization.Charting.SeriesChartType]::Doughnut
+
+    $PoolList = @(Foreach($pool in $PoolCount.Name){$pool})
+    $PoolNumber = @(Foreach($number in $PoolCount){$number.Count})
+
+    $PoolUsageChart1.Series["data1"].Points.DataBindXY($PoolList, $PoolNumber)
+    #$PoolUsageChart1.Series['data1'].Palette = "SeaGreen"
+
+    #There is going to be an anyoing bug here... If there are more than 8 entries then you will have another label with black text on a black circle... DAMN!
+
+    $PoolUsageChart1.Series['data1'].Points[0].LabelForeColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee") 
+    $PoolUsageChart1.Palette = [System.Windows.Forms.DataVisualization.Charting.ChartColorPalette]::None
+    $PoolUsageChart1.PaletteCustomColors = @([System.Drawing.Color]::Black,[System.Drawing.ColorTranslator]::FromHtml("#666666"),[System.Drawing.ColorTranslator]::FromHtml("#ffed00"), [System.Drawing.ColorTranslator]::FromHtml("#64ff00"), [System.Drawing.ColorTranslator]::FromHtml("#00c9ff"), [System.Drawing.ColorTranslator]::FromHtml("#d9d9d9") )
+
+    # set chart options 
+
+    $PoolUsageChart1.Series["data1"]["PieLineColor"] = "Black" 
+    $PoolUsageChart1.Series["data1"].Font = "Arial,18"
+
+    $PoolUsageChart1.Series["data1"].CustomProperties = "DoughnutRadius=50, PieLabelStyle=inside,PieDrawingStyle=default,PieStartAngle=270"
+    $PoolUsageChart1.Series["data1"].IsValueShownAsLabel = $true
+
+    $Legend = New-Object System.Windows.Forms.DataVisualization.Charting.Legend
+    $Legend.IsEquallySpacedItems = $True
+    $Legend.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
+
+    $PoolUsageChart1.Legends.Add($Legend)
+    $PoolUsageChart1.Series[‘data1’].LegendText = "#VALX (#VALY)"
+
+    $tempfile = New-TemporaryFile
+
+    $PoolUsageChart1.SaveImage($tempfile,"png")
+
+
+
+    Get-CBlyncBase64 $tempfile
+
+
+}
