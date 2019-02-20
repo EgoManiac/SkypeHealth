@@ -1,4 +1,4 @@
-function Get-CBLyncHealthNew {
+function Get-CBSkypeHealth {
 
   <#
     .SYNOPSIS
@@ -1706,14 +1706,14 @@ $PostDIVContent = @"
         </div>
 
 "@
-#ConvertTo-Html -Head $Header,$JavaScript -Body $strDivandImgHTML,$strCsWindowsServiceHTML -PostContent $PostDIVContent | Out-File c:\PShtml.html
-ConvertTo-Html -Head $Header,$JavaScript -Body $strDivandImgHTML,$strPoolsServicesHTML,$strCsWindowsServiceHTML,$strReplicationHTML,$strHealthHTML -PostContent $PostDIVContent | Out-File $home\Documents\PShtml.html
-Invoke-Item $home\Documents\PShtml.html
+    #ConvertTo-Html -Head $Header,$JavaScript -Body $strDivandImgHTML,$strCsWindowsServiceHTML -PostContent $PostDIVContent | Out-File c:\PShtml.html
+    ConvertTo-Html -Head $Header,$JavaScript -Body $strDivandImgHTML,$strPoolsServicesHTML,$strCsWindowsServiceHTML,$strReplicationHTML,$strHealthHTML -PostContent $PostDIVContent | Out-File $home\Documents\PShtml.html
+    Invoke-Item $home\Documents\PShtml.html
 
-#endregion
+    #endregion
 
-write-verbose -message  ' Done!'
-#endregion
+    write-verbose -message  ' Done!'
+    #endregion
 
 }
 
@@ -1727,18 +1727,18 @@ function Get-CBUserCounts {
     )
 
 
-$EntirePoolCount = Get-CsUser  # Lets
-$PoolCount = $EntirePoolCount | Group-Object RegistrarPool | Select Count,Name | Sort-Object Count -Descending
-$EVUsers = ($EntirePoolCount | where {$_.EnterpriseVoiceEnabled -eq $true}).count
-$ExUMUsers = ($EntirePoolCount | where {$_.ExUMEnabled -eq $true}).count
+    $EntirePoolCount = Get-CsUser  # Lets
+    $PoolCount = $EntirePoolCount | Group-Object RegistrarPool | Select Count,Name | Sort-Object Count -Descending
+    $EVUsers = ($EntirePoolCount | where {$_.EnterpriseVoiceEnabled -eq $true}).count
+    $ExUMUsers = ($EntirePoolCount | where {$_.ExUMEnabled -eq $true}).count
 
-$Return = @{
-'AllUsers' = $EntirePoolCount.Count;
-'PoolGroups' = $PoolCount;
-'EVusers' = $EVUsers;
-'ExUMusers' = $ExUMUsers;
-}
-Write-Output $Return
+    $Return = @{
+    'AllUsers' = $EntirePoolCount.Count;
+    'PoolGroups' = $PoolCount;
+    'EVusers' = $EVUsers;
+    'ExUMusers' = $ExUMUsers;
+    }
+    Write-Output $Return
 
 }
 
