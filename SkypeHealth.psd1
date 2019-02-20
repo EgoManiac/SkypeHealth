@@ -66,7 +66,7 @@
     # NestedModules = @()
     
     # Functions to export from this module
-    FunctionsToExport = @('Get-CBSkypeHealth', 'Get-CBlyncBase64')
+    FunctionsToExport = @('Get-CbSkypeHealth', 'Get-CbImageBase64')
     
     # Cmdlets to export from this module
     CmdletsToExport   = '*'

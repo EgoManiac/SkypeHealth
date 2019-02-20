@@ -1,4 +1,4 @@
-function Get-CBSkypeHealth {
+function Get-CbSkypeHealth {
 
   <#
     .SYNOPSIS
@@ -1743,7 +1743,7 @@ function Get-CBUserCounts {
 }
 
 
-function Get-CBlyncBase64 {
+function Get-CbImageBase64 {
 
     <#
       .SYNOPSIS
