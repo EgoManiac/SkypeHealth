@@ -1846,9 +1846,9 @@ Function Get-PoolDoughnut {
     $Legend.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
 
     $PoolUsageChart1.Legends.Add($Legend)
-    $PoolUsageChart1.Series[‘data1’].LegendText = "#VALX (#VALY)"
+    $PoolUsageChart1.Series["data1"].LegendText = "#VALX (#VALY)"
 
-    $tempfile = New-TemporaryFile -err
+    $tempfile = New-TemporaryFile
 
     $PoolUsageChart1.SaveImage($tempfile,"png")
 
