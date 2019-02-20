@@ -1809,9 +1809,7 @@ Function Get-PoolDoughnut {
     $PoolUsageChart1 = New-object System.Windows.Forms.DataVisualization.Charting.Chart
 
     $PoolUsageChart1.Width = 800
-
     $PoolUsageChart1.Height = 400
-
     $PoolUsageChart1.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
 
 
