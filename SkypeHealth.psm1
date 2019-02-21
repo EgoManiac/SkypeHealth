@@ -959,7 +959,7 @@ function Get-CbSkypeHealth {
     </script>
 
 "@
-#endregion
+    #endregion
 
 
     #region Graphics
@@ -1382,10 +1382,10 @@ function Get-CbSkypeHealth {
 
     }
 
-#endregion
+    #endregion
 
 
-#region Main Program
+    #region Main Program
 
 
     #region Verifying Administrator Elevation 
@@ -1455,7 +1455,7 @@ function Get-CbSkypeHealth {
     #endregion
 
     #region Building the HTML
-    Write-Progress -Activity "Generating Report" -Status "Constructing HTML - Serices List" -Id 1 -PercentComplete 10
+    Write-Progress -Activity "Generating Report" -Status "Constructing HTML - Services List" -Id 1 -PercentComplete 10
 
     $strPoolsServicesHTML = '<div id="Overview" Class="ContentDiv"><h1>Overview</h1><div class="ContentInnerDiv">'
     $strPoolsServicesHTML += "<H3>Pools,Services and Versions</h3><h5 class='subtitle'>Services and pools within each pool, use this table to identify what each pools role is</h5>"
